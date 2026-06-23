@@ -1,0 +1,70 @@
+# ── Spheretech RAG — Docker Compose ───────────────────────────────────────────
+#
+# Services:
+#   frontend  →  Streamlit UI        (http://localhost:8501)
+#   backend   →  FastAPI API server  (http://localhost:8000)  [bonus phase]
+#
+# Usage:
+#   # Start everything:
+#   docker-compose up --build
+#
+#   # Start frontend only (Simple RAG, no FastAPI):
+#   docker-compose up --build frontend
+#
+#   # Stop and remove containers:
+#   docker-compose down
+#
+# Environment:
+#   Create a .env file in the project root with:
+#       GROQ_API_KEY=your_key_here
+# ──────────────────────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── Frontend — Streamlit UI ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: spheretech-frontend
+    ports:
+      - "8501:8501"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      # Bind mount: FAISS index persists between restarts
+      - ./backend/data:/app/backend/data
+    # Fix 2: depends_on removed — frontend runs independently in Simple RAG mode.
+    # Uncomment when FastAPI backend (bonus phase) is ready:
+    # depends_on:
+    #   - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ── Backend — FastAPI (bonus phase) ────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: spheretech-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      # Bind mount: FAISS index shared with frontend
+      - ./backend/data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Services use bind mounts (./backend/data) directly — no named volume needed.

@@ -1,0 +1,37 @@
+# ── Spheretech RAG — Frontend ─────────────────────────────────────────────────
+# Runs the Streamlit UI.
+
+FROM python:3.11-slim
+
+# Security: run as non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+WORKDIR /app
+
+# Install system deps (curl needed for healthcheck — not included in slim image)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY frontend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy frontend and backend source (frontend imports backend/src modules)
+COPY frontend/ ./frontend/
+COPY backend/  ./backend/
+
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+EXPOSE 8501
+
+# Streamlit config: disable telemetry, set server settings
+ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+ENV STREAMLIT_SERVER_HEADLESS=true
+ENV STREAMLIT_SERVER_ENABLE_CORS=false
+
+CMD ["streamlit", "run", "frontend/app.py", \
+     "--server.port=8501", \
+     "--server.address=0.0.0.0"]

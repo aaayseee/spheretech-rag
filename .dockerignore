@@ -1,0 +1,35 @@
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git
+.gitignore
+
+# ── Environment & secrets ─────────────────────────────────────────────────────
+.env
+*.env
+
+# ── Python cache ──────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+
+# ── FAISS index (rebuilt at runtime) ─────────────────────────────────────────
+backend/data/faiss.index
+backend/data/metadata.json
+
+# ── OS files ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── HuggingFace model cache (~500MB) ─────────────────────────────────────────
+# CRITICAL: without this, Docker build context balloons by 500MB and freezes
+.cache/
+**/.cache/
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/

@@ -1,0 +1,45 @@
+# ── Spheretech RAG — Backend ──────────────────────────────────────────────────
+# Runs the FastAPI server (bonus phase) or can be used as a base for the
+# embedding + FAISS pipeline.
+
+FROM python:3.11-slim
+
+# Security: run as non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+
+WORKDIR /app
+
+# Install system deps needed by faiss, sentence-transformers and healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies first (layer cache optimisation)
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code and data
+COPY backend/ .
+
+# Set HuggingFace cache to a path accessible by appuser (not /root/.cache)
+# Must be set BEFORE downloading the model so it lands in the right place
+ENV HF_HOME=/app/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+
+# Pre-download the embedding model at build time so startup is fast
+# Downloaded as root but into /app/.cache — ownership fixed below
+RUN python3 -c "\
+from sentence_transformers import SentenceTransformer; \
+SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2'); \
+print('Model cached successfully')"
+
+# Change ownership of entire /app (including .cache) to non-root user
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+# Expose FastAPI port (bonus phase)
+EXPOSE 8000
+
+# Default command — override in docker-compose for different entry points
+CMD ["python3", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
