@@ -30,52 +30,68 @@ st.set_page_config(
     page_title="Spheretech AI Assistant",
     page_icon="🛡️",
     layout="centered",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 # ── Custom CSS ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* ── Base & typography ── */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
+    /* ── Global background & text ── */
+    .stApp, .stApp > div, section[data-testid="stSidebar"] {
+        background-color: #0B0F1A !important;
+        color: #E2E8F0 !important;
     }
 
-    /* ── App background ── */
-    .stApp {
-        background-color: #0B0F1A;
-        color: #E2E8F0;
+    /* ── Main content area ── */
+    .block-container {
+        background-color: #0B0F1A !important;
+        padding-top: 2rem !important;
     }
 
-    /* ── Header ── */
-    .sphere-header {
-        text-align: center;
-        padding: 2rem 0 1rem 0;
+    /* ── Sidebar ── */
+    section[data-testid="stSidebar"] {
+        background-color: #0F172A !important;
+        border-right: 1px solid #1E293B !important;
     }
-    .sphere-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #F1F5F9;
-        letter-spacing: -0.5px;
-        margin-bottom: 0.25rem;
+    section[data-testid="stSidebar"] * {
+        color: #CBD5E1 !important;
     }
-    .sphere-header p {
-        color: #64748B;
-        font-size: 0.95rem;
+    section[data-testid="stSidebar"] .stMarkdown p {
+        color: #94A3B8 !important;
+        font-size: 0.85rem !important;
     }
+
+    /* ── All text elements ── */
+    p, h1, h2, h3, h4, span, label, div {
+        color: #E2E8F0 !important;
+    }
+
+    /* ── Header badge ── */
     .sphere-badge {
         display: inline-block;
         background: linear-gradient(135deg, #1E3A5F, #0EA5E9);
-        color: white;
+        color: white !important;
         font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 1.5px;
+        font-weight: 700;
+        letter-spacing: 2px;
         text-transform: uppercase;
-        padding: 3px 10px;
+        padding: 4px 14px;
         border-radius: 20px;
         margin-bottom: 0.75rem;
+    }
+    .sphere-header {
+        text-align: center;
+        padding: 1.5rem 0 1rem 0;
+    }
+    .sphere-header h1 {
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        color: #F1F5F9 !important;
+        margin-bottom: 0.25rem !important;
+    }
+    .sphere-header p {
+        color: #64748B !important;
+        font-size: 0.95rem !important;
     }
 
     /* ── Chat messages ── */
@@ -84,8 +100,8 @@ st.markdown("""
         border: 1px solid #334155;
         border-radius: 12px 12px 4px 12px;
         padding: 0.85rem 1.1rem;
-        margin: 0.5rem 0;
-        color: #E2E8F0;
+        margin: 0.75rem 0;
+        color: #E2E8F0 !important;
         font-size: 0.95rem;
     }
     .chat-assistant {
@@ -94,13 +110,16 @@ st.markdown("""
         border-left: 3px solid #0EA5E9;
         border-radius: 4px 12px 12px 12px;
         padding: 0.85rem 1.1rem;
-        margin: 0.5rem 0;
-        color: #CBD5E1;
+        margin: 0.75rem 0;
+        color: #CBD5E1 !important;
         font-size: 0.95rem;
-        line-height: 1.65;
+        line-height: 1.7;
+    }
+    .chat-assistant p, .chat-assistant li, .chat-assistant strong {
+        color: #CBD5E1 !important;
     }
 
-    /* ── Sources panel ── */
+    /* ── Source cards ── */
     .source-card {
         background: #111827;
         border: 1px solid #1F2937;
@@ -108,102 +127,182 @@ st.markdown("""
         padding: 0.6rem 0.85rem;
         margin: 0.35rem 0;
         font-size: 0.82rem;
-        color: #94A3B8;
+        color: #94A3B8 !important;
     }
-    .source-card .cat-badge {
+    .cat-badge {
         display: inline-block;
         background: #1E3A5F;
-        color: #7DD3FC;
+        color: #7DD3FC !important;
         font-size: 0.68rem;
         font-weight: 600;
         letter-spacing: 0.5px;
-        padding: 1px 7px;
+        padding: 2px 8px;
         border-radius: 4px;
         margin-bottom: 4px;
     }
-    .source-card .score {
+    .score-text {
         float: right;
-        color: #475569;
-        font-family: 'JetBrains Mono', monospace;
+        color: #475569 !important;
         font-size: 0.75rem;
+        font-family: monospace;
     }
 
-    /* ── Sidebar ── */
-    [data-testid="stSidebar"] {
-        background-color: #0F172A;
-        border-right: 1px solid #1E293B;
+    /* ── Chat input area ── */
+    .stChatInput {
+        background-color: #0B0F1A !important;
     }
-    [data-testid="stSidebar"] .stMarkdown p {
-        color: #94A3B8;
-        font-size: 0.85rem;
-    }
-
-    /* ── Input box ── */
-    .stTextInput input, .stChatInput textarea {
-        background: #1E293B !important;
-        border: 1px solid #334155 !important;
+    .stChatInput textarea {
+        background-color: #1E293B !important;
         color: #F1F5F9 !important;
-        border-radius: 8px !important;
+        border: 1px solid #334155 !important;
+        border-radius: 12px !important;
+    }
+    .stChatInput textarea::placeholder {
+        color: #475569 !important;
+    }
+    /* Focus ring'i kapat */
+    .stChatInput textarea:focus {
+        border-color: #0EA5E9 !important;
+        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2) !important;
+        outline: none !important;
+    }
+    [data-testid="stChatInput"] > div {
+        background-color: #0B0F1A !important;
+        border: none !important;
+        box-shadow: none !important;
     }
 
-    /* ── Buttons ── */
-    .stButton button {
-        background: linear-gradient(135deg, #1E3A5F, #0369A1);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.85rem;
-        padding: 0.5rem 1.2rem;
-        transition: opacity 0.2s;
-    }
-    .stButton button:hover {
-        opacity: 0.85;
+    /* ── Fix white bar at bottom ── */
+    .stBottom, .stBottom > div, [data-testid="stBottom"] {
+        background-color: #0B0F1A !important;
+        border-top: 1px solid #1E293B !important;
     }
 
-    /* ── Divider ── */
-    hr {
-        border-color: #1E293B;
-        margin: 1.25rem 0;
+    /* ── Slider ── */
+    .stSlider > div > div > div {
+        background-color: #0EA5E9 !important;
+    }
+
+    /* ── Toggle ── */
+    .stToggle label {
+        color: #CBD5E1 !important;
+    }
+    /* Toggle kapalı arka plan rengi */
+    [data-testid="stToggle"] span[aria-checked="false"] {
+        background-color: #334155 !important;
+    }
+    [data-testid="stToggle"] span[aria-checked="true"] {
+        background-color: #0EA5E9 !important;
+    }
+
+    /* ── Selectbox ── */
+    .stSelectbox > div > div {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
+        color: #E2E8F0 !important;
     }
 
     /* ── Metrics ── */
     [data-testid="metric-container"] {
-        background: #111827;
-        border: 1px solid #1E293B;
-        border-radius: 8px;
-        padding: 0.5rem 0.75rem;
+        background: #111827 !important;
+        border: 1px solid #1E293B !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 0.75rem !important;
     }
-    [data-testid="metric-container"] label {
+    [data-testid="stMetricValue"] {
+        color: #0EA5E9 !important;
+        font-size: 1.4rem !important;
+        font-weight: 700 !important;
+    }
+    [data-testid="stMetricLabel"] {
         color: #64748B !important;
         font-size: 0.75rem !important;
     }
-    [data-testid="metric-container"] [data-testid="stMetricValue"] {
-        color: #0EA5E9 !important;
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
+
+    /* ── Buttons ── */
+    .stButton > button {
+        background: linear-gradient(135deg, #1E3A5F, #0369A1) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        width: 100% !important;
+    }
+    .stButton > button:hover {
+        opacity: 0.85 !important;
     }
 
-    /* ── Hide streamlit branding ── */
+    /* ── Divider ── */
+    hr {
+        border-color: #1E293B !important;
+    }
+
+    /* ── Expander ── */
+    .streamlit-expanderHeader {
+        background-color: #111827 !important;
+        color: #94A3B8 !important;
+        border: 1px solid #1E293B !important;
+        border-radius: 8px !important;
+    }
+    .streamlit-expanderContent {
+        background-color: #0F172A !important;
+        border: 1px solid #1E293B !important;
+    }
+
+    /* ── Spinner ── */
+    .stSpinner > div {
+        border-top-color: #0EA5E9 !important;
+    }
+
+    /* ── Fix ALL white areas ── */
+    .stApp, .stApp > div, .stApp > div > div,
+    .block-container, .main, .main > div,
+    .stChatFloatingInputContainer,
+    [data-testid="stAppViewContainer"],
+    [data-testid="stHeader"],
+    [data-testid="stToolbar"] {
+        background-color: #0B0F1A !important;
+    }
+
+    /* ── Fix input box container ── */
+    .stChatFloatingInputContainer {
+        background-color: #0B0F1A !important;
+        border-top: 1px solid #1E293B !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    /* ── Sidebar toggle button ── */
+    [data-testid="collapsedControl"] {
+        background-color: #0F172A !important;
+        border: 1px solid #1E293B !important;
+    }
+    /* Sidebar kapatma butonunu gizle — sidebar hep açık kalır */
+    [data-testid="stSidebarCollapseButton"] {
+        display: none !important;
+    }
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
+    header {visibility: hidden;}
+    [data-testid="stHeader"] {background-color: #0B0F1A !important; display: none !important;}
+    [data-testid="stToolbar"] {display: none !important;}
+    [data-testid="stDecoration"] {display: none !important;}
+    [data-testid="stBottom"] > div {background-color: #0B0F1A !important;}
+    div[class*="StatusWidget"] {display: none !important;}
+    .stDeployButton {display: none !important;}
+    [data-testid="stAppViewContainer"] > div:first-child {background-color: #0B0F1A !important;}
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Markdown → HTML helper (Fix 1) ───────────────────────────────────────────
+# ── Markdown → HTML helper ─────────────────────────────────────────────────────
 def render_answer(text: str) -> str:
-    """
-    Convert LLM markdown output to safe HTML so bullet points,
-    bold text and code blocks render correctly inside custom divs.
-    """
     return md_parser.markdown(
         text,
         extensions=["fenced_code", "tables", "nl2br"]
     )
 
 
-# ── Retriever init (cached — loads once per session) ───────────────────────────
+# ── Retriever init (cached) ────────────────────────────────────────────────────
 @st.cache_resource(show_spinner=False)
 def load_retriever():
     return Retriever(force_rebuild=False)
@@ -252,9 +351,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("### 📊 Session Stats")
-    col1, col2 = st.columns(2)
-    col1.metric("Queries", st.session_state.total_queries)
-    col2.metric("Tokens", st.session_state.total_tokens)
+    st.metric("Queries", st.session_state.total_queries)
 
     st.divider()
     if st.button("🗑️ Clear chat"):
@@ -267,20 +364,19 @@ with st.sidebar:
     st.markdown("""
 **About**
 
-Spheretech AI Assistant uses a RAG (Retrieval-Augmented Generation) pipeline:
+Spheretech AI Assistant uses a RAG pipeline:
 
-1. Your question is embedded with a multilingual model
-2. The top-k most relevant knowledge chunks are retrieved from FAISS
-3. Retrieved context + your question are sent to Groq LLM
-4. A grounded answer is generated
+1. Query embedded with multilingual model
+2. Top-k chunks retrieved from FAISS
+3. Context + query sent to Groq LLM
+4. Grounded answer generated
 
 *Powered by LLaMA 3.3 70B via Groq*
 
 ---
 **ℹ️ Architecture note**
 
-This is a **Simple RAG** (stateless) implementation. Chat history is displayed
-for UX convenience but only the latest question is sent to the LLM.
+This is a **Simple RAG** (stateless) implementation.
 Multi-turn memory can be added via LangChain in a future phase.
     """)
 
@@ -288,11 +384,13 @@ Multi-turn memory can be added via LangChain in a future phase.
 # ── Header ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="sphere-header">
-    <div class="sphere-badge">🛡️ AI Assistant</div>
+    <div class="sphere-badge">🛡️ AI ASSISTANT</div>
     <h1>Spheretech AI Assistant</h1>
     <p>Ask anything about Spheretech's products, services, and security solutions.</p>
 </div>
 """, unsafe_allow_html=True)
+
+st.divider()
 
 # ── Load retriever ─────────────────────────────────────────────────────────────
 with st.spinner("Initialising knowledge base..."):
@@ -306,12 +404,12 @@ with st.spinner("Initialising knowledge base..."):
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         st.markdown(
-            f'<div class="chat-user">👤 {msg["content"]}</div>',
+            f'<div class="chat-user">👤 &nbsp;{msg["content"]}</div>',
             unsafe_allow_html=True
         )
     else:
         st.markdown(
-            f'<div class="chat-assistant">🤖 {render_answer(msg["content"])}</div>',
+            f'<div class="chat-assistant">🤖 &nbsp;{render_answer(msg["content"])}</div>',
             unsafe_allow_html=True
         )
         if msg.get("sources"):
@@ -320,9 +418,9 @@ for msg in st.session_state.messages:
                     st.markdown(f"""
 <div class="source-card">
     <span class="cat-badge">{src['category']}</span>
-    <span class="score">score: {src['score']:.3f}</span>
-    <br/>
-    <strong>{src['question']}</strong>
+    <span class="score-text">score: {src['score']:.3f}</span>
+    <br/><br/>
+    <strong style="color:#CBD5E1">{src['question']}</strong>
 </div>
 """, unsafe_allow_html=True)
 
@@ -330,70 +428,62 @@ for msg in st.session_state.messages:
 query = st.chat_input("Ask a question about Spheretech...")
 
 if query:
-    # Display user message
     st.markdown(
-        f'<div class="chat-user">👤 {query}</div>',
+        f'<div class="chat-user">👤 &nbsp;{query}</div>',
         unsafe_allow_html=True
     )
     st.session_state.messages.append({"role": "user", "content": query})
 
-    # ── Retrieve context ──
+    # Retrieve context
     with st.spinner("Searching knowledge base..."):
         cat = None if category_filter == "All" else category_filter
         sources = retriever.get_context(query, top_k=top_k, category_filter=cat)
         context = retriever.format_context_for_prompt(sources)
 
-    # ── Generate answer ──
+    # Generate answer
     answer_placeholder = st.empty()
     full_answer = ""
 
     if streaming:
-        with st.spinner(""):
+        answer_placeholder.markdown(
+            '<div class="chat-assistant">🤖 &nbsp;▌</div>',
+            unsafe_allow_html=True
+        )
+        for token in generate_answer_stream(query, context):
+            full_answer += token
             answer_placeholder.markdown(
-                '<div class="chat-assistant">🤖 ▌</div>',
+                f'<div class="chat-assistant">🤖 &nbsp;{full_answer}▌</div>',
                 unsafe_allow_html=True
             )
-            for token in generate_answer_stream(query, context):
-                full_answer += token
-                answer_placeholder.markdown(
-                    f'<div class="chat-assistant">🤖 {full_answer}▌</div>',
-                    unsafe_allow_html=True
-                )
-            answer_placeholder.markdown(
-                f'<div class="chat-assistant">🤖 {render_answer(full_answer)}</div>',
-                unsafe_allow_html=True
-            )
-        tokens_used = 0   # streaming doesn't return usage stats
+        answer_placeholder.markdown(
+            f'<div class="chat-assistant">🤖 &nbsp;{render_answer(full_answer)}</div>',
+            unsafe_allow_html=True
+        )
+        tokens_used = 0
     else:
         with st.spinner("Generating answer..."):
             result = generate_answer(query, context)
-
-        if result["success"]:
-            full_answer = result["answer"]
-            tokens_used = result["usage"].get("total_tokens", 0)
-        else:
-            full_answer = result["answer"]
-            tokens_used = 0
-
+        full_answer = result["answer"]
+        tokens_used = result["usage"].get("total_tokens", 0)
         answer_placeholder.markdown(
-            f'<div class="chat-assistant">🤖 {render_answer(full_answer)}</div>',
+            f'<div class="chat-assistant">🤖 &nbsp;{render_answer(full_answer)}</div>',
             unsafe_allow_html=True
         )
 
-    # ── Show sources ──
+    # Show sources
     if sources:
         with st.expander("📚 Retrieved sources", expanded=False):
             for src in sources:
                 st.markdown(f"""
 <div class="source-card">
     <span class="cat-badge">{src['category']}</span>
-    <span class="score">score: {src['score']:.3f}</span>
-    <br/>
-    <strong>{src['question']}</strong>
+    <span class="score-text">score: {src['score']:.3f}</span>
+    <br/><br/>
+    <strong style="color:#CBD5E1">{src['question']}</strong>
 </div>
 """, unsafe_allow_html=True)
 
-    # ── Save to session ──
+    # Save to session
     st.session_state.messages.append({
         "role":    "assistant",
         "content": full_answer,
