@@ -2,6 +2,8 @@
 
 A production-ready **Retrieval-Augmented Generation (RAG)** system built for Spheretech, a cybersecurity software company. The assistant answers questions about Spheretech's products, services, and policies by retrieving relevant knowledge and generating grounded responses via a Large Language Model.
 
+🌐 **Live Demo:** [spheretech-rag.streamlit.app](https://spheretech-rag.streamlit.app)
+
 ---
 
 ## 📌 Table of Contents
@@ -107,7 +109,7 @@ spheretech-rag/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/spheretech-rag.git
+git clone https://github.com/aaayseee/spheretech-rag.git
 cd spheretech-rag
 ```
 
@@ -165,6 +167,19 @@ docker-compose up --build frontend
 ```bash
 docker-compose down
 ```
+
+---
+
+## Streamlit Cloud Deploy
+
+The app is deployed at [spheretech-rag.streamlit.app](https://spheretech-rag.streamlit.app).
+
+To deploy your own instance:
+1. Fork this repo
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. New app → select repo → Main file: `frontend/app.py`
+4. Add `GROQ_API_KEY = "your_key"` under Secrets
+5. Deploy!
 
 ---
 
